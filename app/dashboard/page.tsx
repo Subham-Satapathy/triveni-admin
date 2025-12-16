@@ -110,7 +110,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {statCards.map((stat) => {
           const Icon = stat.icon;
           return (
@@ -132,7 +132,7 @@ export default function DashboardPage() {
       {/* Recent Bookings */}
       <div className="card">
         <h2 className="text-xl font-bold text-gray-900 mb-4">Recent Bookings</h2>
-        <div className="overflow-x-auto -mx-6">
+        <div className="overflow-x-auto -mx-6 sm:mx-0 sm:rounded-lg">
           <table className="min-w-full divide-y divide-gray-100">
             <thead>
               <tr className="bg-gray-50">

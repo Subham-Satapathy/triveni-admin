@@ -98,8 +98,8 @@ export default function CitiesPage() {
   if (loading) return <div className="text-center py-12">Loading cities...</div>;
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Cities</h1>
           <p className="text-gray-500 mt-1">Manage service locations</p>
@@ -148,7 +148,7 @@ export default function CitiesPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {cities.map((city) => (
           <div key={city.id} className="bg-white rounded-xl border border-gray-100 p-5 flex items-center justify-between hover:shadow-md transition-shadow">
             <div className="flex items-center gap-4">

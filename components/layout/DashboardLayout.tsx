@@ -122,7 +122,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         </header>
 
         {/* Page content */}
-        <main className="p-6 bg-gray-50 min-h-screen">{children}</main>
+        <main className="p-4 sm:p-6 bg-gray-50 min-h-screen">{children}</main>
       </div>
     </div>
   );
