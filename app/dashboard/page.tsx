@@ -12,6 +12,7 @@ import {
   DollarSign,
   Clock,
 } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 
 export default function DashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -101,6 +102,20 @@ export default function DashboardPage() {
     },
   ];
 
+  // Prepare chart data
+  const monthlyRevenueData = stats?.monthlyRevenue || [];
+  const bookingStatusData = stats?.bookingsByStatus || [
+    { status: 'PENDING', count: stats?.pendingBookings || 0 },
+    { status: 'PAID', count: stats?.activeBookings || 0 },
+    { status: 'CANCELLED', count: 0 },
+  ];
+
+  const COLORS = {
+    PENDING: '#F59E0B',
+    PAID: '#10B981',
+    CANCELLED: '#EF4444',
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -116,6 +131,98 @@ export default function DashboardPage() {
           return (
             <div key={stat.name} className="card hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-500">{stat.name}</p>
+                  <p className="text-3xl font-bold text-gray-900 mt-2">{stat.value}</p>
+                </div>
+                <div className={`${stat.color} p-4 rounded-2xl shadow-lg`}>
+                  <Icon className="w-6 h-6 text-white" />
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Analytics Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Monthly Revenue Chart */}
+        <div className="card">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Monthly Revenue</h2>
+          {monthlyRevenueData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={monthlyRevenueData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis 
+                  dataKey="month" 
+                  stroke="#6b7280"
+                  style={{ fontSize: '12px' }}
+                />
+                <YAxis 
+                  stroke="#6b7280"
+                  style={{ fontSize: '12px' }}
+                  tickFormatter={(value) => `₹${(value / 1000).toFixed(0)}k`}
+                />
+                <Tooltip 
+                  formatter={(value: number) => formatCurrency(value)}
+                  contentStyle={{
+                    backgroundColor: '#ffffff',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '8px',
+                  }}
+                />
+                <Bar dataKey="revenue" fill="#10B981" radius={[8, 8, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-[300px] flex items-center justify-center text-gray-500">
+              No revenue data available
+            </div>
+          )}
+        </div>
+
+        {/* Bookings by Status Chart */}
+        <div className="card">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Bookings by Status</h2>
+          {bookingStatusData.some(d => d.count > 0) ? (
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={bookingStatusData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ status, count, percent }) => 
+                    count > 0 ? `${status}: ${(percent * 100).toFixed(0)}%` : ''
+                  }
+                  outerRadius={100}
+                  fill="#8884d8"
+                  dataKey="count"
+                >
+                  {bookingStatusData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[entry.status as keyof typeof COLORS]} />
+                  ))}
+                </Pie>
+                <Tooltip 
+                  formatter={(value: number) => `${value} bookings`}
+                  contentStyle={{
+                    backgroundColor: '#ffffff',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '8px',
+                  }}
+                />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-[300px] flex items-center justify-center text-gray-500">
+              No booking data available
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/*     <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-500">{stat.name}</p>
                   <p className="text-3xl font-bold text-gray-900 mt-2">{stat.value}</p>

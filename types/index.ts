@@ -14,6 +14,7 @@ export interface Vehicle {
   year?: number;
   color?: string;
   licensePlate?: string;
+  seats?: number;
   seatingCapacity?: number;
   mileage?: string;
   fuelType?: 'PETROL' | 'DIESEL' | 'ELECTRIC' | 'HYBRID' | 'CNG';
@@ -50,7 +51,11 @@ export interface Tour {
   durationDays: number;
   basePrice: number;
   pricePerKm: number;
+  maxGroupSize?: number;
   highlights?: string;
+  itinerary?: string;
+  inclusions?: string;
+  exclusions?: string;
   imageUrl?: string;
   galleryImages?: string;
   isActive: boolean;
@@ -76,16 +81,22 @@ export interface Booking {
   pricePerHour: number;
   pricePerDay: number;
   totalAmount: number;
-  securityDeposit: number;
+  securityDeposit?: number;
   customerName: string;
   customerEmail: string;
   customerPhone: string;
+  pickupLocation?: string;
+  dropoffLocation?: string;
+  numberOfPeople?: number;
+  specialRequests?: string;
+  paymentId?: string;
   status: 'PENDING' | 'PAID' | 'CANCELLED';
   paymentReference?: string;
   createdAt: string;
   updatedAt: string;
   vehicle?: Vehicle;
   tour?: Tour;
+  user?: User;
   fromCity?: City;
   toCity?: City;
 }

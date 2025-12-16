@@ -6,10 +6,13 @@ import { apiClient } from '@/lib/api-client';
 import { Tour } from '@/types';
 import { formatCurrency, formatNumber } from '@/lib/utils';
 import { Plus, Edit, Trash2, MapPin } from 'lucide-react';
+import TourForm from '@/components/forms/TourForm';
 
 export default function ToursPage() {
   const [tours, setTours] = useState<Tour[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [editingTour, setEditingTour] = useState<Tour | null>(null);
 
   useEffect(() => {
     fetchTours();
@@ -36,6 +39,22 @@ export default function ToursPage() {
     }
   };
 
+  const handleEdit = (tour: Tour) => {
+    setEditingTour(tour);
+    setShowForm(true);
+  };
+
+  const handleFormSuccess = () => {
+    setShowForm(false);
+    setEditingTour(null);
+    fetchTours();
+  };
+
+  const handleFormCancel = () => {
+    setShowForm(false);
+    setEditingTour(null);
+  };
+
   if (loading) return <div className="text-center py-12">Loading tours...</div>;
 
   return (
@@ -45,7 +64,10 @@ export default function ToursPage() {
           <h1 className="text-3xl font-bold text-gray-900">Tours</h1>
           <p className="text-gray-500 mt-1">Manage tour packages</p>
         </div>
-        <button className="bg-black text-white px-4 py-2.5 rounded-lg font-medium hover:bg-gray-800 transition-colors flex items-center gap-2">
+        <button 
+          onClick={() => setShowForm(true)}
+          className="bg-black text-white px-4 py-2.5 rounded-lg font-medium hover:bg-gray-800 transition-colors flex items-center gap-2"
+        >
           <Plus className="w-4 h-4" />
           Add Tour
         </button>
@@ -95,7 +117,10 @@ export default function ToursPage() {
                 {formatCurrency(tour.basePrice)}
               </div>
               <div className="flex gap-2">
-                <button className="flex-1 bg-gray-100 text-gray-700 py-2.5 rounded-lg font-medium hover:bg-gray-200 transition-colors flex items-center justify-center gap-2">
+                <button 
+                  onClick={() => handleEdit(tour)}
+                  className="flex-1 bg-gray-100 text-gray-700 py-2.5 rounded-lg font-medium hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
+                >
                   <Edit className="w-4 h-4" />
                   Edit
                 </button>
@@ -111,6 +136,14 @@ export default function ToursPage() {
           </div>
         ))}
       </div>
+
+      {showForm && (
+        <TourForm
+          tour={editingTour || undefined}
+          onSuccess={handleFormSuccess}
+          onCancel={handleFormCancel}
+        />
+      )}
     </div>
   );
 }
