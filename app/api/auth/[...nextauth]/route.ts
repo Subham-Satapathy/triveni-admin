@@ -1,5 +1,9 @@
 import NextAuth, { type NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import { db } from '@/lib/db';
+import { users } from '@/lib/schema';
+import { eq } from 'drizzle-orm';
+import bcrypt from 'bcryptjs';
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -14,42 +18,46 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        // Simple demo authentication - replace with API call to your backend
-        // Example: const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/login`, ...)
-        
-        const demoEmail = process.env.ADMIN_EMAIL || 'admin@tour.com';
-        const demoPassword = process.env.ADMIN_PASSWORD || 'admin123';
+        try {
+          // Query user from database
+          const [user] = await db
+            .select()
+            .from(users)
+            .where(eq(users.email, credentials.email))
+            .limit(1);
 
-        if (credentials.email === demoEmail && credentials.password === demoPassword) {
+          if (!user) {
+            return null;
+          }
+
+          // Check if user is admin
+          if (user.role !== 'admin') {
+            return null;
+          }
+
+          // Check if user is active
+          if (!user.isActive) {
+            return null;
+          }
+
+          // Verify password
+          const isValidPassword = await bcrypt.compare(credentials.password, user.password);
+          
+          if (!isValidPassword) {
+            return null;
+          }
+
+          // Return user object
           return {
-            id: '1',
-            email: demoEmail,
-            name: 'Admin User',
-            role: 'admin',
+            id: user.id.toString(),
+            email: user.email,
+            name: user.name,
+            role: user.role,
           };
+        } catch (error) {
+          console.error('Login error:', error);
+          return null;
         }
-
-        // In production, call your backend API:
-        // try {
-        //   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/login`, {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify({ email: credentials.email, password: credentials.password }),
-        //   });
-        //   const data = await res.json();
-        //   if (data.success && data.user) {
-        //     return {
-        //       id: data.user.id.toString(),
-        //       email: data.user.email,
-        //       name: data.user.name,
-        //       role: data.user.role,
-        //     };
-        //   }
-        // } catch (error) {
-        //   console.error('Login error:', error);
-        // }
-
-        return null;
       },
     }),
   ],
