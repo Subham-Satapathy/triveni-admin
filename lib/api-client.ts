@@ -17,11 +17,8 @@ class ApiClient {
     // Request interceptor
     this.client.interceptors.request.use(
       (config) => {
-        // Add auth token if available
-        const token = localStorage.getItem('admin_token');
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
-        }
+        // Auth is handled by cookies via NextAuth
+        // No need for manual token management
         return config;
       },
       (error) => Promise.reject(error)

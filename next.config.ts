@@ -9,9 +9,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  turbopack: {
-    root: '/Users/subhamsatapathy/Desktop/tour-admin',
-  },
+  output: 'standalone',
 };
 
 export default nextConfig;

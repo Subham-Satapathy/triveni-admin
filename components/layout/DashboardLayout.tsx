@@ -116,7 +116,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           <div className="flex-1" />
           <div className="flex items-center gap-4">
             <div className="text-sm text-gray-700">
-              <span className="font-semibold">Admin User</span>
+              <span className="font-semibold">Admin</span>
             </div>
           </div>
         </header>
