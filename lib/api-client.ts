@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, AxiosError } from 'axios';
+import { getSession } from 'next-auth/react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
@@ -16,9 +17,13 @@ class ApiClient {
 
     // Request interceptor
     this.client.interceptors.request.use(
-      (config) => {
-        // Auth is handled by cookies via NextAuth
-        // No need for manual token management
+      async (config) => {
+        // Get NextAuth session and add user email as auth header
+        const session = await getSession();
+        if (session?.user?.email) {
+          config.headers['x-admin-email'] = session.user.email;
+          config.headers['x-admin-role'] = session.user.role;
+        }
         return config;
       },
       (error) => Promise.reject(error)
@@ -28,7 +33,7 @@ class ApiClient {
     this.client.interceptors.response.use(
       (response) => response,
       (error: AxiosError) => {
-        if (error.response?.status === 401) {
+        if (error.response?.status === 401 || error.response?.status === 403) {
           // Redirect to login on unauthorized
           if (typeof window !== 'undefined') {
             window.location.href = '/login';
